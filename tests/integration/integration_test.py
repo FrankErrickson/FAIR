@@ -272,3 +272,30 @@ def test_geoffroy():
     C, F, T, lambda_eff, ohc, heatflux = fair.forward.fair_scm(
         emissions = rcp85.Emissions.emissions,
         temperature_function='Geoffroy')
+
+        
+def test_aerosol_sum():
+    _, F, _, ariaci = fair.forward.fair_scm(
+        emissions = rcp85.Emissions.emissions,
+        aerosol_forcing='aerocom+ghan',
+        ariaci_out=True)
+    assert np.allclose(F[:,8], ariaci.sum(axis=1))
+    
+    _, F, _, ariaci = fair.forward.fair_scm(
+        emissions = rcp85.Emissions.emissions,
+        aerosol_forcing='aerocom+ghan2',
+        ariaci_out=True,
+        b_aero = np.array([-0.01384057, 0, 0, 0, 0.12828154, -0.03819786, 0.]),
+        ghan_params = np.array([ 1.52258718, 37.72774615, 50.65793934]),
+        E_pi=rcp85.Emissions.emissions[0,:],
+        scaleAerosolAR5=False,
+        scaleHistoricalAR5=False,
+        fixPre1850RCP=False,
+        )
+    assert np.allclose(F[:,8], ariaci.sum(axis=1))
+    
+    _, F, _, ariaci = fair.forward.fair_scm(
+        emissions = rcp85.Emissions.emissions,
+        aerosol_forcing='stevens',
+        ariaci_out=True)
+    assert np.allclose(F[:,8], ariaci.sum(axis=1))
